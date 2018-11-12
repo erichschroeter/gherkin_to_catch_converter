@@ -122,7 +122,7 @@ def main():
 		steps = parse_gherkin_scenario(scenarios[0])
 
 		with open(args['--output'], 'w+') as outfile:
-			outfile.write('#include {}'.format(args['--include']))
+			outfile.write('#include {}\n'.format(args['--include']))
 			for scenario in scenarios:
 				steps = parse_gherkin_scenario(scenario)
 				catch_str = generate_catch_scenario(steps)
