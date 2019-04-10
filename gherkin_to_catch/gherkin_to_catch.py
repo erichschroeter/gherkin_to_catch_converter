@@ -13,7 +13,8 @@ options:
 
 To format the code output from this script the following is recommended:
 
-    astyle --style=allman --indent=tab=4 <output_file>
+    astyle --style=allman --indent=tab=4 <input_file>
+
 """
 
 import os
