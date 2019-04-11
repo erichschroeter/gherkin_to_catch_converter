@@ -28,11 +28,20 @@ def build_catch_scenario(text):
 def build_catch_given(text):
 	return 'GIVEN( "{}" )'.format(text)
 
+def build_catch_and_given(text):
+	return 'AND_GIVEN( "{}" )'.format(text)
+
 def build_catch_when(text):
 	return 'WHEN( "{}" )'.format(text)
 
+def build_catch_and_when(text):
+	return 'AND_WHEN( "{}" )'.format(text)
+
 def build_catch_then(text):
 	return 'THEN( "{}" )'.format(text)
+
+def build_catch_and_then(text):
+	return 'AND_THEN( "{}" )'.format(text)
 
 def parse_gherkin_scenario(scenario_text):
 	lines = scenario_text.splitlines()
@@ -86,18 +95,33 @@ def generate_catch_scenario(steps):
 	given_depth = 0
 	when_depth = 0
 	catch_str = ''
+	previous_step = ''
 	for step in steps:
 		if step['keyword'] == 'GIVEN':
-			given_depth += 1
-			catch_str += '{}{{\n'.format(build_catch_given(step['value']))
+			if previous_step == 'GIVEN':
+				catch_str = catch_str.rstrip('{\n}\n')
+				catch_str += '\n{}{{\n'.format(build_catch_and_given(step['value']))
+			else:
+				given_depth += 1
+				catch_str += '{}{{\n'.format(build_catch_given(step['value']))
 		elif step['keyword'] == 'WHEN':
-			when_depth += 1
-			catch_str += '{}{{\n'.format(build_catch_when(step['value']))
+			if previous_step == 'WHEN':
+				catch_str = catch_str.rstrip('{\n}\n')
+				catch_str += '\n{}{{\n'.format(build_catch_and_when(step['value']))
+			else:
+				when_depth += 1
+				catch_str += '{}{{\n'.format(build_catch_when(step['value']))
+				previous_step = 'WHEN'
 		elif step['keyword'] == 'THEN':
-			catch_str += '{}{{\n}}\n'.format(build_catch_then(step['value']))
-			for i in range(when_depth):
-				catch_str += '}\n'
-				when_depth -= 1
+			if previous_step == 'THEN':
+				catch_str = catch_str.rstrip('{\n}\n')
+				catch_str += '\n{}{{\n}}\n'.format(build_catch_and_then(step['value']))
+			else:
+				catch_str += '{}{{\n}}\n'.format(build_catch_then(step['value']))
+				for i in range(when_depth):
+					catch_str += '}\n'
+					when_depth -= 1
+				previous_step = 'THEN'
 		elif step['keyword'] == 'SCENARIO':
 			catch_str += '{}{{\n'.format(build_catch_scenario(step['value']))
 	for i in range(given_depth):
