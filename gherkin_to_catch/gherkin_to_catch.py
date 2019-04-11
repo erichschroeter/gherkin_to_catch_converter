@@ -59,35 +59,35 @@ def parse_gherkin_scenario(scenario_text):
 
 	for line in lines:
 		trimmed_line = line.strip()
-		if pattern_GIVEN.match(trimmed_line):
-			previous_keyword = 'GIVEN'
-			value = pattern_GIVEN.split(trimmed_line)[1]
-			previous_step = {'keyword': 'GIVEN', 'value': value}
-			steps.append(previous_step)
-			steps_count += 1
-		elif pattern_WHEN.match(trimmed_line):
-			previous_keyword = 'WHEN'
-			value = pattern_WHEN.split(trimmed_line)[1]
-			previous_step = {'keyword': 'WHEN', 'value': value}
-			steps.append(previous_step)
-			steps_count += 1
-		elif pattern_THEN.match(trimmed_line):
-			previous_keyword = 'THEN'
-			value = pattern_THEN.split(trimmed_line)[1]
-			previous_step = {'keyword': 'THEN', 'value': value}
-			steps.append(previous_step)
-			steps_count += 1
-		elif pattern_AND.match(trimmed_line):
-			value = pattern_AND.split(trimmed_line)[1]
-			if previous_keyword == 'GIVEN':
-				steps.append({'keyword': 'GIVEN', 'value': value})
-			elif previous_keyword == 'WHEN':
-				steps.append({'keyword': 'WHEN', 'value': value})
-			elif previous_keyword == 'THEN':
-				steps.append({'keyword': 'THEN', 'value': value})
-		else:
-			# Guard against empty lines.
-			if line:
+		# Guard against empty lines.
+		if trimmed_line:
+			if pattern_GIVEN.match(trimmed_line):
+				previous_keyword = 'GIVEN'
+				value = pattern_GIVEN.split(trimmed_line)[1]
+				previous_step = {'keyword': 'GIVEN', 'value': value}
+				steps.append(previous_step)
+				steps_count += 1
+			elif pattern_WHEN.match(trimmed_line):
+				previous_keyword = 'WHEN'
+				value = pattern_WHEN.split(trimmed_line)[1]
+				previous_step = {'keyword': 'WHEN', 'value': value}
+				steps.append(previous_step)
+				steps_count += 1
+			elif pattern_THEN.match(trimmed_line):
+				previous_keyword = 'THEN'
+				value = pattern_THEN.split(trimmed_line)[1]
+				previous_step = {'keyword': 'THEN', 'value': value}
+				steps.append(previous_step)
+				steps_count += 1
+			elif pattern_AND.match(trimmed_line):
+				value = pattern_AND.split(trimmed_line)[1]
+				if previous_keyword == 'GIVEN':
+					steps.append({'keyword': 'GIVEN', 'value': value})
+				elif previous_keyword == 'WHEN':
+					steps.append({'keyword': 'WHEN', 'value': value})
+				elif previous_keyword == 'THEN':
+					steps.append({'keyword': 'THEN', 'value': value})
+			else:
 				if len(steps) > 1:
 					# A continuation of the previous step broken into multiple lines.
 					value = line.strip()
