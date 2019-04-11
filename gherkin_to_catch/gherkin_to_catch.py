@@ -131,6 +131,9 @@ def generate_catch_scenario(steps):
 	catch_str += '}\n'
 	return catch_str
 
+def parse_gherkin_scenarios(gherkin_string):
+		return re.findall(r'(?<=Scenario:)(.*?)(?=Scenario:|\Z)', gherkin_string, re.DOTALL)
+
 def main():
 	args = docopt(__doc__, version="1.0")
 	#print(args)
@@ -142,7 +145,7 @@ def main():
 	with open(args['<feature_file>'], "r") as feature_file:
 		data = feature_file.read()
 
-		scenarios = re.findall(r'(?<=Scenario:)(.*?)(?=Scenario:|\Z)', data, re.DOTALL)
+		scenarios = parse_gherkin_scenarios(data)
 
 		steps = parse_gherkin_scenario(scenarios[0])
 
