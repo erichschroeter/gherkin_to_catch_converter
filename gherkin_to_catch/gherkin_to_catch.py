@@ -49,31 +49,36 @@ def parse_gherkin_scenario(scenario_text):
 	steps = []
 	previous_keyword = ''
 	previous_step = {}
+	pattern_GIVEN = re.compile(r'^GIVEN\s*', re.I)
+	pattern_WHEN = re.compile(r'^WHEN\s*', re.I)
+	pattern_THEN = re.compile(r'^THEN\s*', re.I)
+	pattern_AND = re.compile(r'^AND\s*', re.I)
 
 	steps.append({'keyword': 'SCENARIO', 'value': lines[0].strip()})
 	steps_count += 1
 
 	for line in lines:
-		if line.strip().upper().startswith('GIVEN'):
+		trimmed_line = line.strip()
+		if pattern_GIVEN.match(trimmed_line):
 			previous_keyword = 'GIVEN'
-			value = line.split('Given', 1)[1].strip()
+			value = pattern_GIVEN.split(trimmed_line)[1]
 			previous_step = {'keyword': 'GIVEN', 'value': value}
 			steps.append(previous_step)
 			steps_count += 1
-		elif line.strip().upper().startswith('WHEN'):
+		elif pattern_WHEN.match(trimmed_line):
 			previous_keyword = 'WHEN'
-			value = line.split('When', 1)[1].strip()
+			value = pattern_WHEN.split(trimmed_line)[1]
 			previous_step = {'keyword': 'WHEN', 'value': value}
 			steps.append(previous_step)
 			steps_count += 1
-		elif line.strip().upper().startswith('THEN'):
+		elif pattern_THEN.match(trimmed_line):
 			previous_keyword = 'THEN'
-			value = line.split('Then', 1)[1].strip()
+			value = pattern_THEN.split(trimmed_line)[1]
 			previous_step = {'keyword': 'THEN', 'value': value}
 			steps.append(previous_step)
 			steps_count += 1
-		elif line.strip().upper().startswith('AND'):
-			value = line.split('And', 1)[1].strip()
+		elif pattern_AND.match(trimmed_line):
+			value = pattern_AND.split(trimmed_line)[1]
 			if previous_keyword == 'GIVEN':
 				steps.append({'keyword': 'GIVEN', 'value': value})
 			elif previous_keyword == 'WHEN':
