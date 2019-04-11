@@ -29,6 +29,5 @@ THEN( "the 'System Fault B' is 'asserted'" ){
 }
 }
 }
-}
-"""
+}"""
 		self.assertEquals(catch2_text, expected_text)

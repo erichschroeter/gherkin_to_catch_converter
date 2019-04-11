@@ -22,6 +22,5 @@ THEN( "the 'System Warning A' is 'asserted'" ){
 }
 }
 }
-}
-"""
+}"""
 		self.assertEquals(catch2_text, expected_text)

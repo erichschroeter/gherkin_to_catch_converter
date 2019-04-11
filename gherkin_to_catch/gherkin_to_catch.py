@@ -97,44 +97,49 @@ def parse_gherkin_scenario(scenario_text):
 	return steps
 
 def generate_catch_scenario(steps):
-	given_depth = 0
-	when_depth = 0
+	given_braces = ''
+	and_then_braces = ''
 	catch_str = ''
-	previous_step = ''
-	for step in steps:
+	catch2_steps = []
+	previous_keyword = ''
+	for i, step in enumerate(steps):
 		if step['keyword'] == 'GIVEN':
-			if previous_step == 'GIVEN':
-				catch_str = catch_str.rstrip('{\n}\n')
-				catch_str += '\n{}{{\n'.format(build_catch_and_given(step['value']))
+			and_then_braces = '' # Reset the closing braces.
+			if previous_keyword == 'GIVEN':
+				catch2_steps[ i - 1 ] = catch2_steps[ i - 1 ].rstrip(r'{')
+				catch_str = '{}{{'.format(build_catch_and_given(step['value']))
 			else:
-				given_depth += 1
-				catch_str += '{}{{\n'.format(build_catch_given(step['value']))
+				given_braces += '}'
+				catch_str = '{}{{'.format(build_catch_given(step['value']))
+				previous_keyword = 'GIVEN'
+			catch2_steps.append(catch_str)
 		elif step['keyword'] == 'WHEN':
-			if previous_step == 'WHEN':
-				catch_str = catch_str.rstrip('{\n}\n')
-				catch_str += '\n{}{{\n'.format(build_catch_and_when(step['value']))
+			if previous_keyword == 'WHEN':
+				catch2_steps[ i - 1 ] = catch2_steps[ i - 1 ].rstrip(r'{')
+				catch_str = '{}{{'.format(build_catch_and_when(step['value']))
 			else:
-				when_depth += 1
-				catch_str += '{}{{\n'.format(build_catch_when(step['value']))
-				previous_step = 'WHEN'
+				and_then_braces = '\n}'
+				catch_str = '{}{{'.format(build_catch_when(step['value']))
+				previous_keyword = 'WHEN'
+			catch2_steps.append(catch_str)
 		elif step['keyword'] == 'THEN':
-			if previous_step == 'THEN':
-				catch_str = catch_str.rstrip('{\n}\n')
-				catch_str += '\n{}{{\n}}\n'.format(build_catch_and_then(step['value']))
+			and_then_braces += '\n}'
+			if previous_keyword == 'THEN':
+				# Remove all the newlines and closing braces.
+				catch2_steps[ i - 1 ] = catch2_steps[ i - 1 ].splitlines()[0]
+				catch_str = '{}{{{}'.format(build_catch_and_then(step['value']), and_then_braces)
 			else:
-				catch_str += '{}{{\n}}\n'.format(build_catch_then(step['value']))
-				for i in range(when_depth):
-					catch_str += '}\n'
-					when_depth -= 1
-				previous_step = 'THEN'
+				catch_str = '{}{{{}'.format(build_catch_then(step['value']), and_then_braces)
+				previous_keyword = 'THEN'
+			catch2_steps.append(catch_str)
 		elif step['keyword'] == 'SCENARIO':
-			catch_str += '{}{{\n'.format(build_catch_scenario(step['value']))
-	for i in range(given_depth):
-		catch_str += '}\n'
-		given_depth -= 1
+			and_then_braces = '' # Reset the closing braces.
+			catch_str = '{}{{'.format(build_catch_scenario(step['value']))
+			catch2_steps.append(catch_str)
+	catch2_steps.append(given_braces)
 	# Close out the Scenario.
-	catch_str += '}\n'
-	return catch_str
+	catch2_steps.append('}')
+	return '\n'.join(catch2_steps)
 
 def parse_gherkin_scenarios(gherkin_string):
 		return re.findall(r'(?<=Scenario:)(.*?)(?=Scenario:|\Z)', gherkin_string, re.DOTALL)

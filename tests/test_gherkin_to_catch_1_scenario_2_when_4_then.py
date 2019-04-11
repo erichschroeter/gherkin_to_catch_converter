@@ -27,18 +27,25 @@ Scenario: Verify the system warnings are asserted after 2000 milliseconds
 		expected_text = """SCENARIO( "Verify the system warnings are asserted after 2000 milliseconds" ){
 GIVEN( "I have a System" ){
 WHEN( "the 'System Flag X' is 'asserted'" ){
-THEN( "the 'System Fault A' is 'deasserted'" )
-AND_THEN( "the 'System Warning A' is 'deasserted'" )
-AND_THEN( "the 'System Fault B' is 'deasserted'" )
+THEN( "the 'System Fault A' is 'deasserted'" ){
+AND_THEN( "the 'System Warning A' is 'deasserted'" ){
+AND_THEN( "the 'System Fault B' is 'deasserted'" ){
 AND_THEN( "the 'System Warning B' is 'deasserted'" ){
 }
+}
+}
+}
+}
 WHEN( "2000 milliseconds elapse" ){
-THEN( "the 'System Fault A' is 'deasserted'" )
-AND_THEN( "the 'System Warning A' is 'asserted'" )
-AND_THEN( "the 'System Fault B' is 'deasserted'" )
+THEN( "the 'System Fault A' is 'deasserted'" ){
+AND_THEN( "the 'System Warning A' is 'asserted'" ){
+AND_THEN( "the 'System Fault B' is 'deasserted'" ){
 AND_THEN( "the 'System Warning B' is 'asserted'" ){
 }
 }
 }
-"""
+}
+}
+}
+}"""
 		self.assertEquals(catch2_text, expected_text)
