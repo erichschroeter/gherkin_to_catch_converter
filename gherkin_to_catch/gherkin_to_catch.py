@@ -144,6 +144,15 @@ def generate_catch_scenario(steps):
 def parse_gherkin_scenarios(gherkin_string):
 		return re.findall(r'(?<=Scenario:)(.*?)(?=Scenario:|\Z)', gherkin_string, re.DOTALL)
 
+def generate_catch_scenarios(gherkin):
+	catch_output = []
+	scenarios = parse_gherkin_scenarios(gherkin)
+	for scenario in scenarios:
+		steps = parse_gherkin_scenario(scenario)
+		catch_str = generate_catch_scenario(steps)
+		catch_output.append(catch_str)
+	return '\n'.join(catch_output)
+
 def main():
 	args = docopt(__doc__, version="1.0")
 	#print(args)
@@ -161,10 +170,7 @@ def main():
 
 		with open(args['--output'], 'w+') as outfile:
 			outfile.write('#include {}\n'.format(args['--include']))
-			for scenario in scenarios:
-				steps = parse_gherkin_scenario(scenario)
-				catch_str = generate_catch_scenario(steps)
-				outfile.write(catch_str)
+			outfile.write(generate_catch_scenarios(data))
 
 if __name__ == "__main__":
 	main()
