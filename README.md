@@ -23,7 +23,49 @@ C++ file using the [Catch2][1] single-header BDD library.
 
 To format the code output from this script the following is recommended:
 
-    astyle --style=allman --indent=tab=4 <output_file>
+    astyle --style=allman --indent=tab=4 <input_file>
+
+# Example
+
+Given the following example Gherkin file _Example.feature_:
+
+    Feature: System faults and warnings
+    
+    Scenario: Verify the system faults are asserted after 2000 milliseconds
+    
+    	Given I have a System
+    	When the 'System Flag X' is 'asserted'
+    	Then the 'System Fault A' is 'asserted'
+    
+    	When 2000 milliseconds elapse
+    	Then the 'System Fault B' is 'asserted'
+
+The following command:
+
+    python gherkin_to_catch.py Example.feature
+
+Will produce the following _.cpp_ output file (styled with the Astyle command above):
+
+    #include <catch.hpp>
+
+    SCENARIO( "Verify the system faults are asserted after 2000 milliseconds" )
+    {
+    	GIVEN( "I have a System" )
+    	{
+    		WHEN( "the 'System Flag X' is 'asserted'" )
+    		{
+    			THEN( "the 'System Fault A' is 'asserted'" )
+    			{
+    			}
+    		}
+    		WHEN( "2000 milliseconds elapse" )
+    		{
+    			THEN( "the 'System Fault B' is 'asserted'" )
+    			{
+    			}
+    		}
+    	}
+    }
 
 [0]: https://docs.cucumber.io/gherkin/reference/
 [1]: https://github.com/catchorg/Catch2
